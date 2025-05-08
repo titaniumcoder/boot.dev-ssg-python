@@ -3,9 +3,9 @@ import unittest
 from leafnode import LeafNode
 from textnode import TextNode, TextType
 
-from converter import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes
+from inline_converter import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes
 
-class TestConverter(unittest.TestCase):
+class TestInlineConverter(unittest.TestCase):
   def test_unknown(self):
     node = TextNode("mytext", "something")
     self.assertRaises(Exception, text_node_to_html_node, node)

@@ -9,7 +9,7 @@ class LeafNode(HTMLNode):
       raise ValueError("Node needs a value")
 
     if self.tag == None:
-      return value
+      return self.value
 
     props_html = self.props_to_html()
     if props_html != "":
