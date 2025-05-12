@@ -1,6 +1,6 @@
 import unittest
 
-from block_converter import BlockType, markdown_to_blocks, block_to_block_type, markdown_to_html_node
+from block_converter import BlockType, markdown_to_blocks, block_to_block_type, markdown_to_html_node, extract_title
 
 class TestBlockConverter(unittest.TestCase):
     def test_markdown_to_blocks(self):
@@ -132,3 +132,28 @@ the **same** even with inline stuff
             html,
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
+
+    def test_extract_title_success(self):
+        md = """
+# I am the page header
+"""
+
+        title = extract_title(md)
+        self.assertEqual(
+            title,
+            "I am the page header",
+        )
+
+    def test_extract_title_missing(self):
+        md = """
+> I have no title
+"""
+        self.assertRaises(Exception, extract_title, md)
+
+    def test_extract_title_failure(self):
+        md = """
+# Title 1
+
+# Title 2
+"""
+        self.assertRaises(Exception, extract_title, md)

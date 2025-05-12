@@ -88,3 +88,29 @@ def markdown_to_html_node(markdown):
   children = [convert_to_html_node(block) for block in blocks]
 
   return ParentNode("div", children)
+
+def filter_headings(block):
+  return block_to_block_type(block) == BlockType.HEADING
+
+def filter_header_1(lines):
+  headers = []
+  for line in lines:
+    matches = re.findall(r"^# (.+)", line)
+    if len(matches) > 0:
+      headers.append(matches[0])
+  return headers
+
+def extract_title(markdown):
+  # stupid because repetitive but I am lazy and performance
+  # is not king. just scanning for '#' seems to be against 
+  # my DRY feeling
+  blocks = markdown_to_blocks(markdown)
+  headings = []
+  for block in blocks:
+    if filter_headings(block):
+      for text in filter_header_1([block]):
+        headings.append(text)
+
+  if len(headings) != 1:
+    raise Exception("more than one heading")
+  return headings[0]
