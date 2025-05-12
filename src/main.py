@@ -2,11 +2,14 @@ from textnode import TextNode, TextType
 
 from block_converter import markdown_to_html_node, extract_title
 
-import os, shutil
+import os, shutil, sys
 
 def main():
-  copy_files("static", "public")
-  generate_pages("content", "template.html", "public")
+  basepath = '/'
+  if len(sys.argv) > 0:
+    basepath = sys.argv[1]
+  copy_files("static", "docs")
+  generate_pages("content", "template.html", "docs", basepath)
 
 def copy_files(src, dest):
   # recursively delete files from dest
@@ -39,18 +42,18 @@ def copy_dir(src, dest):
     if os.path.isfile(fullname):
       shutil.copy(fullname, dest)
 
-def generate_pages(from_path, template_path, dest_path):
+def generate_pages(from_path, template_path, dest_path, basepath):
   for content in os.listdir(from_path):
     fullname = os.path.join(from_path, content)
     if os.path.isdir(fullname):
       target_dir = os.path.join(dest_path, content)
       os.mkdir(target_dir)
-      generate_pages(fullname, template_path, target_dir)
+      generate_pages(fullname, template_path, target_dir, basepath)
     if os.path.isfile(fullname):
       target_path, ext = os.path.splitext(os.path.join(dest_path, content))
-      generate_page(fullname, template_path, target_path + ".html")
+      generate_page(fullname, template_path, target_path + ".html", basepath)
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
   print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
   markdown_file = open(from_path)
@@ -66,6 +69,8 @@ def generate_page(from_path, template_path, dest_path):
 
   template = template.replace("{{ Content }}", html_content)
   template = template.replace("{{ Title }}", title)
+  template = template.replace("href=\"/", f"href=\"{basepath}")
+  template = template.replace("src=\"/", f"src=\"{basepath}")
 
   os.makedirs(os.path.dirname(dest_path), exist_ok=True)
 
